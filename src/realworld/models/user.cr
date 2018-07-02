@@ -28,5 +28,13 @@ module Realworld::Models
     validate_format :email, /^[^@]+@(\w+\.)+\w+$/
     unique_constraint :username
     unique_constraint :email
+
+    def followed_by?(user : User)
+      follower_users.select {|fu| fu.follower_user_id == user.id }.size > 0
+    end
+
+    def following?(user : User)
+      followed_users.select {|fu| fu.followed_user_id == user.id }.size > 0
+    end
   end
 end

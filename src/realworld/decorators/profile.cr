@@ -10,7 +10,7 @@ module Realworld::Decorators
       following = false
 
       if auth_user = @viewer
-        following = auth_user.followed_users.select {|fu| fu.followed_user_id == @owner.id }.size > 0
+        following = auth_user.following?(@owner)
       end
 
       builder.object do

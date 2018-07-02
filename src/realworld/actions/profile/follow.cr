@@ -16,7 +16,7 @@ module Realworld::Actions::Profile
       profile_owner = Repo.get_by(User, username: env.params.url["username"])
       raise Realworld::NotFoundException.new(env) if !profile_owner
 
-      if user.followed_users.select {|fu| fu.followed_user_id == profile_owner.id}.size == 0
+      if !user.following?(profile_owner)
         following = Following.new
         following.follower_user_id = user.id
         following.followed_user_id = profile_owner.id

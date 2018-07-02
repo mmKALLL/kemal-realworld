@@ -18,7 +18,7 @@ module Realworld::Actions::Article
 
       article = Repo.get_by(Article, slug: slug)
       raise Realworld::NotFoundException.new(env) if !article
-      raise Realworld::ForbiddenException.new(env) if article.user_id != user.id
+      raise Realworld::ForbiddenException.new(env) if !article.authored_by?(user)
 
       article.body  = params["body"].as_s if params["body"]?
       article.title = params["title"].as_s if params["title"]?

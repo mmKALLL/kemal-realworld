@@ -17,11 +17,11 @@ module Realworld::Actions::Article
 
       article = Repo.get_by(Realworld::Models::Article, slug: slug)
       raise Realworld::NotFoundException.new(env) if !article
-      raise Realworld::ForbiddenException.new(env) if article.user_id == user.id
+      raise Realworld::ForbiddenException.new(env) if article.authored_by?(user)
 
       article = Repo.get!(Realworld::Models::Article, article.id, Repo::Query.preload([:favorites, :tags, :user]))
       
-      if article.favorites.select {|f| f.user_id == user.id}.size == 0
+      if !article.favorited_by?(user)
         fave = Realworld::Models::Favorite.new
         fave.article = article
         fave.user = user

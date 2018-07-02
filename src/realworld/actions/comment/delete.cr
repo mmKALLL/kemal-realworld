@@ -13,7 +13,7 @@ module Realworld::Actions::Comment
       user = env.get("auth").as(User)
 
       slug = env.params.url["slug"]
-      id   = env.params.url["id"].to_i64?
+      id = env.params.url["id"].to_i64?
       
       raise Realworld::NotFoundException.new(env) if !id
       
@@ -23,7 +23,7 @@ module Realworld::Actions::Comment
       comment = Repo.get(Comment, id)
       raise Realworld::NotFoundException.new(env) if !comment
 
-      if article.id == comment.article_id && user.id == comment.user_id
+      if comment.posted_in?(article) && comment.authored_by?(user)
         changeset = Repo.delete(comment)
         if !changeset.valid?
           errors = {"errors" => map_changeset_errors(changeset.errors)}

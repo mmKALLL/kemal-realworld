@@ -13,7 +13,7 @@ module Realworld::Decorators
       favorited = false
 
       if auth_user = @viewer
-        favorited = @article.favorites.select {|f| f.user_id == auth_user.id }.size > 0
+        favorited = @article.favorited_by?(auth_user)
       end
 
       builder.object do

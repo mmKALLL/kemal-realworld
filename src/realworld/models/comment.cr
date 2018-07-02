@@ -13,5 +13,14 @@ module Realworld::Models
     end
 
     validate_required [:body, :user_id, :article_id]
+
+    def authored_by?(user : User)
+      user_id == user.id
+    end
+
+    def posted_in?(article : Article)
+      article_id == article.id
+    end
+
   end
 end

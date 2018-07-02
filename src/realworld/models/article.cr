@@ -20,5 +20,14 @@ module Realworld::Models
     end
 
     validate_required [:slug, :title, :body, :description, :user_id]
+
+    def favorited_by?(user : User)
+      favorites.select {|f| f.user_id == user.id}.size > 0
+    end
+
+    def authored_by?(user : User)
+      user_id == user.id
+    end
+    
   end
 end
