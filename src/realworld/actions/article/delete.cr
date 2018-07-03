@@ -17,16 +17,14 @@ module Realworld::Actions::Article
 
       article = Repo.get_by(Article, slug: slug)
       raise Realworld::NotFoundException.new(env) if !article
+      raise Realworld::ForbiddenException.new(env) if !article.authored_by?(user)
 
-      if article.authored_by?(user)
-        article.tags = Repo.get_association(article, :tags).as(Array(Tag))
-        changeset = Repo.delete(article)
-        if !changeset.valid?
-          errors = {"errors" => map_changeset_errors(changeset.errors)}
-          raise Realworld::UnprocessableEntityException.new(env, errors.to_json)
-        end
-      else
-        raise Realworld::ForbiddenException.new(env)
+      article.tags = Repo.get_association(article, :tags).as(Array(Tag))
+      
+      changeset = Repo.delete(article)
+      if !changeset.valid?
+        errors = {"errors" => map_changeset_errors(changeset.errors)}
+        raise Realworld::UnprocessableEntityException.new(env, errors.to_json)
       end
     end
   end

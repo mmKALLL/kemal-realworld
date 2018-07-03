@@ -22,15 +22,12 @@ module Realworld::Actions::Comment
       
       comment = Repo.get(Comment, id)
       raise Realworld::NotFoundException.new(env) if !comment
+      raise Realworld::ForbiddenException.new(env) if !comment.posted_in?(article) || !comment.authored_by?(user)
 
-      if comment.posted_in?(article) && comment.authored_by?(user)
-        changeset = Repo.delete(comment)
-        if !changeset.valid?
-          errors = {"errors" => map_changeset_errors(changeset.errors)}
-          raise Realworld::UnprocessableEntityException.new(env, errors.to_json)
-        end
-      else
-        raise Realworld::ForbiddenException.new(env)
+      changeset = Repo.delete(comment)
+      if !changeset.valid?
+        errors = {"errors" => map_changeset_errors(changeset.errors)}
+        raise Realworld::UnprocessableEntityException.new(env, errors.to_json)
       end
     end
   end
